@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Landing Page</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <style>
+        body {
+            margin: 15px;
+            padding: 10px;
+            font-family: Arial, sans-serif;
+            background-color: white;
+            
+        }
+        .menu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            background-color: black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 0px;
+            color: whitesmoke;
+        }
+        
+        .welcome-text{
+            text-align: center;
+            padding: 50px 0;
+            margin-bottom: 10px;
+            position: relative;
+            display: flex;
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+            background: 50% 100% / 50% 50% no-repeat
+            radial-gradient(ellipse at bottom, #fff, transparent, transparent);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-size: 2em;
+            animation: glow 2500ms linear infinite 2000ms;
+        }
+
+        @keyframes reveal {
+        80% {letter-spacing: 10px;}
+        100% {background-size: 300% 300%;}
+        }
+        @keyframes glow {
+        40% {text-shadow: 0 0 8px #fff;}
+        }
+
+        .paragraph{
+            text-align: center;
+            animation: reveal 3000ms ease-in forwards 200ms,   
+            glow 2500ms linear infinite 2000ms;
+        }
+
+        h1 {
+            font-size: 2em;
+            color: #333;
+        }
+        p {
+            font-size: 1.2em;
+            color: #666;
+        }
+        .category-section {
+            margin-bottom: 50px;
+        }
+        .category-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: black;
+        }
+        .product-grid {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .product-item {
+            width: 20%;
+            text-align: center;
+            margin: 0 0 4px 4px;
+            vertical-align: top;
+            box-shadow: 2px 5px 30px 5px rgb(0, 0, 0);
+            border-radius: 25px;
+            overflow: hidden;
+        }
+    </style>
+    <div class="menu">
+        <h1><a href="/" style="color: inherit; text-decoration: none;">Show More</a></h1>
+    </div>
+    <div class="container">
+    <div class="welcome-text">
+        <h1>WELCOME to the HOME of TREND!</h1><br>
+    </div>
+    <div class="paragraph">
+        <p>Find the most <b>CHIC OUTFITS</b> in our collection.</p>
+    </div>
+    {% for category, products in random_products_by_category.items() %}
+<div class="category-section">
+    <h2 class="category-title">{{ category }}</h2>
+    <div class="product-grid">
+        {% for product in products %}
+            {% set imgPath = 'images/' ~ product['id'] ~ '.jpg' %}
+            <div class="product-item" onclick="handleImageClick('{{ imgPath }}')">
+                <img src="{{ url_for('static', filename=imgPath) }}" alt="{{ product['productDisplayName'] }}" style="width:100%;height:auto;">
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endfor %}
+
+
+    <script>
+        function handleImageClick(imgPath) {
+            event.preventDefault();
+
+            var fullImgPath = 'static/' + imgPath;
+            
+            fetch('/store_image_path', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({ img_path: fullImgPath }) 
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = '/recommend';
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+    
+</body>
+</html>

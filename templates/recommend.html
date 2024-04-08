@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Recommendations</title>
+</head>
+<body>
+    <style>
+        body {
+            margin: 15px;
+            padding: 10px;
+            font-family: Arial, sans-serif;
+            background-color: white;
+           -
+        }
+        .menu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            background-color: black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 0px;
+            color: whitesmoke;
+        }
+        .product-details {
+            margin-top: 60px;
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+            padding: 20px;
+            background-color: white;
+            margin-bottom: 20px;
+        }
+        .product-details img {
+            width: 100%;
+            height: auto;
+        }
+        .product-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .recommendations {
+            display: flex;
+            justify-content: space-around;
+            gap: 20px;
+            padding: 20px;
+            height: 500px;
+            width: 100%;
+        }
+        .recommendations-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .recommendation-item img {
+            height: 80%;
+            width: 80%;
+            box-shadow: 2px 5px 30px 5px rgb(0, 0, 0);
+            border-radius: 25px;
+            overflow: hidden;
+        }
+        .recommendation-item{
+            flex: 1 1 100%;
+        }
+        .buy-now-btn, .add-to-cart-btn {
+            padding: 10px 20px;
+            margin-top: 10px;
+            border: none;
+            cursor: pointer;
+        }
+        .buy-now-btn {
+            background-color: #008CBA; /* Blue */
+            color: white;
+        }
+
+        .add-to-cart-btn {
+            background-color: #4CAF50; /* Green */
+            color: white;
+        }
+
+    </style>
+    <div class="menu">
+        <h1><a href="/" style="color: inherit; text-decoration: none;">Show More</a></h1>
+    </div>
+    
+    <div class="product-details">
+        <img src="{{ url_for('static', filename='images/' ~ product['id'] ~ '.jpg') }}" alt="{{ product['productDisplayName'] }}">
+        <div class="product-info">
+            <h2>{{ product['productDisplayName'] }}</h2>
+            <p>Gender: {{ product['gender'] }}</p>
+            <p>Article Type: {{ product['articleType'] }}</p>
+            <p>Base Colour: {{ product['baseColour'] }}</p>
+            <p>Season: {{ product['season'] }}</p>
+            <p>Year: {{ product['year'] }}</p>
+            <p>Usage: {{ product['usage'] }}</p>
+            <p>Price: $100 </p>
+            <button class="buy-now-btn">Buy Now</button>
+            <button class="add-to-cart-btn">Add to Cart</button>
+        </div>
+    </div>
+    <div class="recommendations-container">
+        <h2>Recommendations</h2>
+        <div class="recommendations">
+            {% for img_path in images %}
+                <div class="recommendation-item" onclick="handleImageClick('{{ img_path }}')">
+                    <img src="{{ url_for('static', filename=img_path) }}" alt="Recommended Product">
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+
+    <script>
+        function handleImageClick(imgPath) {
+            event.preventDefault();
+    
+            var fullImgPath = 'static/' + imgPath;
+            
+            fetch('/store_image_path', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({ img_path: fullImgPath }) 
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = '/recommend';
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+
+</body>
+</html>
